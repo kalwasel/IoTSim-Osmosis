@@ -1,5 +1,3 @@
-# IoTSimSDN
+# IoTSim-Osmosis
 
-Self-contained simulation tool that enables the modeling and simulating of big data management systems (e.g., YARN), big
-data programming models (e.g., MapReduce), and SDN-enabled networks within cloud computing
-environments.
+IoTSim-Osmosis is a simulation framework that supports the testing and validation of osmotic computing applications. In particular, it enables a unified modelling and simulation of complex IoT applications over heterogeneous edge-cloud SDN-aware environments. A wide range of osmosis applications can be simulated and evaluated in IoTSim-Osmosis. For more information, read BigDataSDNSim_User_Manual.pdf.
