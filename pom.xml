@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.cloudbus</groupId>
-    <artifactId>OsmesisSDN</artifactId>
+    <artifactId>IoTSim-Osmosis</artifactId>
     <version>1.0</version>
 
     <build>
