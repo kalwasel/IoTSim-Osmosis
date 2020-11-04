@@ -12,7 +12,7 @@
 package org.cloudbus.osmosis.core;
 
 import org.cloudbus.cloudsim.edge.core.edge.EdgeDataCenter;
-import org.cloudbus.osmosis.core.polocies.SDNMapReduceSchedulingPolicy;
+import org.cloudbus.osmosis.core.polocies.SDNTrafficSchedulingPolicy;
 import org.cloudbus.osmosis.core.polocies.SDNRoutingPolicy;
 
 
@@ -27,7 +27,7 @@ import org.cloudbus.osmosis.core.polocies.SDNRoutingPolicy;
 public class EdgeSDNController extends SDNController {
 	EdgeDataCenter edgeDataCenters;	
 
-	public EdgeSDNController(String name, SDNMapReduceSchedulingPolicy sdnPolicy, SDNRoutingPolicy sdnRouting){
+	public EdgeSDNController(String name, SDNTrafficSchedulingPolicy sdnPolicy, SDNRoutingPolicy sdnRouting){
 		super(name, sdnPolicy,sdnRouting);			
 	}
 }

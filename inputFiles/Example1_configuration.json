@@ -18,18 +18,14 @@
 			"costPerStorage":0.001,
 			"architecture":"x86"			
 		},				
-		"hostListEntities":[
+		"hosts":[
 			{		    
 				"name":"edgeDevice_1",				
 			    "pes" : 4,
 				"ramSize":10000,
 				"bwSize":100,				
 				"storage":10000,
-				"mips":10000,								
-				"max_IoTDevice_capacity":10000.0,
-				"max_battery_capacity":2000.0,					
-				"battery_drainage_rate":1.0,
-				"current_battery_capacity":2000.0				
+				"mips":10000			
             },
 			{
 				"name":"edgeDevice_2",				
@@ -37,33 +33,23 @@
 				"ramSize":10000,
 				"bwSize":100,				
 				"storage":10000,
-				"mips":10000,					
-				"max_IoTDevice_capacity":10000.0,
-				"max_battery_capacity":2000.0,					
-				"battery_drainage_rate":1.0,
-				"current_battery_capacity":2000.0				
+				"mips":10000				
             }
             ],
 		"MELEntities":[
 		{
-			"name":"MEL_1",
-			"datasizeShrinkFactor":0.5,
-			"size":2048,			
+			"name":"MEL_1",								
 			"bw":100,				 
-			"mips":250,
-			"type":"filtering",
+			"mips":250,			
 			"ram":10000,
 			"pesNumber":1,
 			"vmm":"xxx",			
 			"cloudletSchedulerClassName":"org.cloudbus.cloudsim.CloudletSchedulerTimeShared"
 		},
 		{
-			"name":"MEL_2",
-			"datasizeShrinkFactor":0.2,
-			"size":2048,			
+			"name":"MEL_2",					
 			"bw":100,
-			"mips":250,
-			"type":"filtering",
+			"mips":250,			
 			"ram":10000,
 			"pesNumber":1,
 			"vmm":"xxx",			
@@ -139,7 +125,7 @@
 			{ "source" : "edge1" , "destination" : "edgeDevice_1" , "bw" : 100},
 			{ "source" : "edge2" , "destination" : "edgeDevice_2" , "bw" : 100}
 		],
-		"ioTDeviceEntities":[
+		"ioTDevices":[
 			  {
 				"name":"temperature_1",
 				"bw":100,				
@@ -585,7 +571,7 @@
 		]
 	 }
 	],
-  "wan": [
+  "sdwan": [
 	  {
 		"controllers": {
 		  "name": "wan_sdn",

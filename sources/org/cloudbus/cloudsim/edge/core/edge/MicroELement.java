@@ -32,9 +32,9 @@ public class MicroELement extends Vm {
 	
 	private int edgeDatacenterId;	
 
-	public MicroELement(int edgeDatacenterId, int id, int userId, double mips, int numberOfPes, int ram, long bw, long size, String vmm,
-			CloudletScheduler cloudletScheduler,String type,float shrinkingFactor) {
-		super(id, userId, mips, numberOfPes, ram, bw, size,vmm, cloudletScheduler);
+	public MicroELement(int edgeDatacenterId, int id, int userId, double mips, int numberOfPes, int ram, long bw, String vmm,
+			CloudletScheduler cloudletScheduler,float shrinkingFactor) {
+		super(id, userId, mips, numberOfPes, ram, bw, 2048,vmm, cloudletScheduler);
 		this.edgeDatacenterId = edgeDatacenterId;		
 	}		
 	

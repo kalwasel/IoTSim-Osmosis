@@ -23,7 +23,7 @@ import org.cloudbus.osmosis.core.Flow;
  * @since BigDataSDNSim 1.0
  */
 
-public abstract class SDNMapReduceSchedulingPolicy {
+public abstract class SDNTrafficSchedulingPolicy {
 	private String policyName;	
 	
 	public abstract void setFlowPriority(Flow flow);

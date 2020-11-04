@@ -23,11 +23,11 @@ import org.cloudbus.osmosis.core.Flow;
  * @since BigDataSDNSim 1.0
  */
 
-public class SDNMapReducePolicyFairShare extends SDNMapReduceSchedulingPolicy {
+public class SDNTrafficPolicyFairShare extends SDNTrafficSchedulingPolicy {
 
 	protected List<Flow> packetList;
 
-	public SDNMapReducePolicyFairShare(){
+	public SDNTrafficPolicyFairShare(){
 		packetList = new ArrayList<Flow>();		
 		setPolicyName("FairShair");
 	}

@@ -25,7 +25,7 @@ import org.cloudbus.cloudsim.edge.core.edge.ConfiguationEntity.SwitchEntity;
 import org.cloudbus.cloudsim.sdn.Link;
 import org.cloudbus.cloudsim.sdn.NetworkNIC;
 import org.cloudbus.cloudsim.sdn.Switch;
-import org.cloudbus.osmosis.core.polocies.SDNMapReduceSchedulingPolicy;
+import org.cloudbus.osmosis.core.polocies.SDNTrafficSchedulingPolicy;
 import org.cloudbus.osmosis.core.polocies.SDNRoutingPolicy;
 
 /**
@@ -42,7 +42,7 @@ public class SDWANController extends SDNController {
 	private Map<OsmesisDatacenter, List<Integer>> datacenterVmList;
 	protected Topology topology;
 	
-	public SDWANController(String name, SDNMapReduceSchedulingPolicy sdnPolicy, SDNRoutingPolicy sdnRouting){
+	public SDWANController(String name, SDNTrafficSchedulingPolicy sdnPolicy, SDNRoutingPolicy sdnRouting){
 		super(name, sdnPolicy,sdnRouting);
 		this.datacenterName = "WAN_Layer";
 	}

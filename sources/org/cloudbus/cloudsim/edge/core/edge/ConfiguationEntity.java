@@ -31,7 +31,7 @@ public class ConfiguationEntity {
 	
 	private List<EdgeDataCenterEntity> edgeDatacenter;
 	private List<CloudDataCenterEntity> cloudDatacenter;
-	private List<WanEntity> wan;
+	private List<WanEntity> sdwan;
 //    private List<ConnectionEntity> connections;
 	
 	@Data
@@ -49,12 +49,12 @@ public class ConfiguationEntity {
 		private double schedulingInterval;		
 		private VmAllcationPolicyEntity vmAllocationPolicy;
 		private EdgeDatacenterCharacteristicsEntity characteristics;
-		private List<EdgeDeviceEntity> hostListEntities;		
+		private List<EdgeDeviceEntity> hosts;		
 		private List<MELEntities> MELEntities;		
 		private List<ControllerEntity> controllers;
 		private List<SwitchEntity> switches;		
 		private List<LinkEntity> links;
-		private List<IotDeviceEntity> ioTDeviceEntities;
+		private List<IotDeviceEntity> ioTDevices;
 		private List<WirelessConnections> IoT_MEL_Wireless_Connections;
 	}
 
@@ -91,13 +91,7 @@ public class ConfiguationEntity {
 		int pes;
 		int ramSize;
 		int mips;
-		int bwSize;		
-		MobilityEntity geo_location;		
-		int max_IoTDevice_capacity;
-		double max_battery_capacity;
-		double battery_sensing_rate;
-		double battery_sending_rate;
-		double current_battery_capacity;
+		int bwSize;					
 	}
 	
 	@Data
@@ -165,13 +159,11 @@ public class ConfiguationEntity {
 		String name;
 		String host;		
 		int mips;
-		long size; // image size (MB)
 		int ram; // vm memory (MB)
 		long bw;
 		int pesNumber; // number of cpus
 		String vmm; // VMM name
-		String cloudletSchedulerClassName;
-		String type;	
+		String cloudletSchedulerClassName;		
 		float datasizeShrinkFactor;
 
 	}

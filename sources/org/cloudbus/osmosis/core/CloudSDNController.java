@@ -11,7 +11,7 @@
 
 package org.cloudbus.osmosis.core;
 
-import org.cloudbus.osmosis.core.polocies.SDNMapReduceSchedulingPolicy;
+import org.cloudbus.osmosis.core.polocies.SDNTrafficSchedulingPolicy;
 import org.cloudbus.osmosis.core.polocies.SDNRoutingPolicy;
 
 /**
@@ -24,7 +24,7 @@ import org.cloudbus.osmosis.core.polocies.SDNRoutingPolicy;
 
 public class CloudSDNController extends SDNController {	
 	
-	public CloudSDNController(String name, SDNMapReduceSchedulingPolicy sdnPolicy, SDNRoutingPolicy sdnRouting){
+	public CloudSDNController(String name, SDNTrafficSchedulingPolicy sdnPolicy, SDNRoutingPolicy sdnRouting){
 		super(name, sdnPolicy,sdnRouting);		
 	}
 }

@@ -1,5 +1,5 @@
 Initialising...
-Creating topology from file input/Example1_configuration.json
+Creating topology from file inputFiles/Example1_configuration.json
 Topology built:
 CombinedLeastFullFirst
 Create a policy object and intiate 5000.0

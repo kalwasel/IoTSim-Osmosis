@@ -20,9 +20,9 @@ import org.cloudbus.cloudsim.sdn.example.policies.VmAllocationPolicyCombinedMost
  * @author Jungmin Son
  * @since CloudSimSDN 1.0
  */
-public class VmAllocationPolicyCombinedLeastFullFirst extends VmAllocationPolicyCombinedMostFullFirst{
+public class VmMELAllocationPolicyCombinedLeastFullFirst extends VmAllocationPolicyCombinedMostFullFirst{
 
-	public VmAllocationPolicyCombinedLeastFullFirst() {
+	public VmMELAllocationPolicyCombinedLeastFullFirst() {
 		super();
 		this.setPolicyName("CombinedLeastFullFirst");
 	}

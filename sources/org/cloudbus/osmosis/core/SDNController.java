@@ -30,7 +30,7 @@ import org.cloudbus.cloudsim.sdn.NetworkNIC;
 import org.cloudbus.cloudsim.sdn.SDNHost;
 import org.cloudbus.cloudsim.sdn.Switch;
 
-import org.cloudbus.osmosis.core.polocies.SDNMapReduceSchedulingPolicy;
+import org.cloudbus.osmosis.core.polocies.SDNTrafficSchedulingPolicy;
 import org.cloudbus.osmosis.core.polocies.SDNRoutingPolicy;
 
 /**
@@ -45,7 +45,7 @@ public class SDNController extends NetworkOperatingSystem {
 	
 	
 	protected SDNRoutingPolicy sdnRoutingPoloicy;
-	private SDNMapReduceSchedulingPolicy sdnSchedulingPolicy;	
+	private SDNTrafficSchedulingPolicy sdnSchedulingPolicy;	
 	
 	private OsmosisOrchestrator orchestrator;
 
@@ -58,7 +58,7 @@ public class SDNController extends NetworkOperatingSystem {
 	
     protected String name;
     
-	public SDNController(String name, SDNMapReduceSchedulingPolicy sdnPolicy, SDNRoutingPolicy sdnRouting) {				
+	public SDNController(String name, SDNTrafficSchedulingPolicy sdnPolicy, SDNRoutingPolicy sdnRouting) {				
 		super(name);
 		this.sdnSchedulingPolicy = sdnPolicy;
 		this.sdnRoutingPoloicy = sdnRouting;
@@ -204,7 +204,7 @@ public class SDNController extends NetworkOperatingSystem {
 	}
 
 	
-	public SDNMapReduceSchedulingPolicy getSdnSchedulingPolicy() {
+	public SDNTrafficSchedulingPolicy getSdnSchedulingPolicy() {
 		return sdnSchedulingPolicy;
 	}
 

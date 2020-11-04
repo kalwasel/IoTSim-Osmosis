@@ -52,11 +52,11 @@ import org.cloudbus.cloudsim.sdn.Switch;
 import org.cloudbus.cloudsim.sdn.example.policies.VmAllocationPolicyCombinedMostFullFirst;
 import org.cloudbus.cloudsim.sdn.example.policies.VmSchedulerTimeSharedEnergy;
 import org.cloudbus.cloudsim.sdn.power.PowerUtilizationMaxHostInterface;
-import org.cloudbus.osmosis.core.polocies.SDNMapReducePolicyFairShare;
-import org.cloudbus.osmosis.core.polocies.SDNMapReduceSchedulingPolicy;
+import org.cloudbus.osmosis.core.polocies.SDNTrafficPolicyFairShare;
+import org.cloudbus.osmosis.core.polocies.SDNTrafficSchedulingPolicy;
 import org.cloudbus.osmosis.core.polocies.SDNRoutingLoadBalancing;
 import org.cloudbus.osmosis.core.polocies.SDNRoutingPolicy;
-import org.cloudbus.osmosis.core.polocies.VmAllocationPolicyCombinedLeastFullFirst;
+import org.cloudbus.osmosis.core.polocies.VmMELAllocationPolicyCombinedLeastFullFirst;
 
 import java.io.FileReader;
 import java.lang.reflect.Constructor;
@@ -124,7 +124,7 @@ public class OsmosisBuilder {
 			datacenterGateways.add(osmesisDC.getSdnController().getGateway());			
 		
         }		
-        List<WanEntity> wanEntities = topologyEntity.getWan();
+        List<WanEntity> wanEntities = topologyEntity.getSdwan();
         this.sdWanController = buildWan(wanEntities, datacenterGateways);
         setWanControllerToDatacenters(sdWanController, osmesisDatacentres);
         sdWanController.addAllDatacenters(osmesisDatacentres);
@@ -147,7 +147,7 @@ public class OsmosisBuilder {
             	vmAllocationPolicyFactory = hostList -> new VmAllocationPolicyCombinedMostFullFirst();	
             }
             if(datacentreEntity.getVmAllocationPolicy().equals("VmAllocationPolicyCombinedLeastFullFirst")){
-            	vmAllocationPolicyFactory = hostList -> new VmAllocationPolicyCombinedLeastFullFirst();	
+            	vmAllocationPolicyFactory = hostList -> new VmMELAllocationPolicyCombinedLeastFullFirst();	
             }
 
             CloudDatacenter datacentre = createCloudDatacenter(
@@ -203,7 +203,7 @@ public class OsmosisBuilder {
             System.out.println(vmPolicy.getPolicyName());
             if(vmPolicy instanceof VmAllocationPolicyCombinedMostFullFirst){
                 vmPolicy.setPolicyName("CombinedMostFullFirst");
-            } else if(vmPolicy instanceof VmAllocationPolicyCombinedLeastFullFirst){
+            } else if(vmPolicy instanceof VmMELAllocationPolicyCombinedLeastFullFirst){
                 vmPolicy.setPolicyName("CombinedLeastFullFirst");
             }
             // Why to use maxHostHandler!
@@ -220,7 +220,7 @@ public class OsmosisBuilder {
 
     protected SDNController createCloudSDNController(ControllerEntity controllerEntity){
 
-        SDNMapReduceSchedulingPolicy sdnMapReducePolicy = null;
+        SDNTrafficSchedulingPolicy sdnMapReducePolicy = null;
         SDNRoutingPolicy sdnRoutingPolicy = null;       
         String sdnName = controllerEntity.getName();
         switch (controllerEntity.getRoutingPolicy()){
@@ -231,7 +231,7 @@ public class OsmosisBuilder {
 
         switch (controllerEntity.getTrafficPolicy()){
             case "FairShare":
-                sdnMapReducePolicy = new SDNMapReducePolicyFairShare();
+                sdnMapReducePolicy = new SDNTrafficPolicyFairShare();
                 break;
         }
 
@@ -287,7 +287,7 @@ public class OsmosisBuilder {
     }
  
     protected SDNController createWanController(ControllerEntity controllerEntity){
-        SDNMapReduceSchedulingPolicy sdnMapReducePolicy = null;
+        SDNTrafficSchedulingPolicy sdnMapReducePolicy = null;
         SDNRoutingPolicy sdnRoutingPolicy = null;
        
         String sdnName = controllerEntity.getName();
@@ -300,7 +300,7 @@ public class OsmosisBuilder {
 
         switch (controllerEntity.getTrafficPolicy()){
             case "FairShare":
-                sdnMapReducePolicy = new SDNMapReducePolicyFairShare();
+                sdnMapReducePolicy = new SDNTrafficPolicyFairShare();
                 break;
         }
 
@@ -319,13 +319,12 @@ public class OsmosisBuilder {
         List<EdgeDataCenter> edgeDC = new ArrayList<EdgeDataCenter>();
 
     	for(EdgeDataCenterEntity edgeDCEntity : edgeDatacenerEntites){    		    
-			List<EdgeDeviceEntity> hostListEntities = edgeDCEntity.getHostListEntities();
+			List<EdgeDeviceEntity> hostListEntities = edgeDCEntity.getHosts();
 			List<EdgeDevice> hostList = new ArrayList<EdgeDevice>();
 			try {
 				for (EdgeDeviceEntity hostEntity : hostListEntities) {
 					VmAllcationPolicyEntity vmSchedulerEntity = edgeDCEntity.getVmAllocationPolicy();
-					String vmSchedulerClassName = vmSchedulerEntity.getClassName();
-					MobilityEntity geo_location = hostEntity.getGeo_location();								
+					String vmSchedulerClassName = vmSchedulerEntity.getClassName();												
 					LinkedList<Pe> peList = new LinkedList<Pe>();
 					int peId=0;
 					for(int i= 0; i < hostEntity.getPes(); i++) {
@@ -337,9 +336,7 @@ public class OsmosisBuilder {
 					VmScheduler vmScheduler = new VmSchedulerTimeSharedEnergy(peList);						
 	
 					EdgeDevice edgeDevice = new EdgeDevice(hostId, hostEntity.getName(), ramProvisioner, bwProvisioner,
-							hostEntity.getStorage(), peList, vmScheduler,
-							hostEntity.getMax_IoTDevice_capacity(), hostEntity.getMax_battery_capacity(),
-							hostEntity.getBattery_sensing_rate(),hostEntity.getBattery_sending_rate(), hostEntity.getCurrent_battery_capacity());
+							hostEntity.getStorage(), peList, vmScheduler);
 							
 					hostList.add(edgeDevice);
 					hostId++;
@@ -374,7 +371,7 @@ public class OsmosisBuilder {
 			try {
 				switch(className){
 					case "VmAllocationPolicyCombinedLeastFullFirst":
-					vmAllocationPolicy = new VmAllocationPolicyCombinedLeastFullFirst();
+					vmAllocationPolicy = new VmMELAllocationPolicyCombinedLeastFullFirst();
 				break;
 			}
 				datacenter = new EdgeDataCenter(edgeDCEntity.getName(), characteristics, vmAllocationPolicy, storageList,
@@ -407,7 +404,7 @@ public class OsmosisBuilder {
 			datacenter.getVmAllocationPolicy().setUpVmTopology(hostList);
 			datacenter.getSdnController().addVmsToSDNhosts(MELList);
 			
-			List<IoTDevice> devices = createIoTDevice(edgeDCEntity.getIoTDeviceEntities());
+			List<IoTDevice> devices = createIoTDevice(edgeDCEntity.getIoTDevices());
 			this.broker.setIoTDevices(devices);
 			edgeDC.add(datacenter);
     	}		
@@ -415,7 +412,7 @@ public class OsmosisBuilder {
 	}
     
     protected SDNController creatEdgeSDNController(ControllerEntity controllerEntity){
-        SDNMapReduceSchedulingPolicy sdnMapReducePolicy = null;
+        SDNTrafficSchedulingPolicy sdnMapReducePolicy = null;
         SDNRoutingPolicy sdnRoutingPolicy = null;       
         String sdnName = controllerEntity.getName();
 
@@ -427,7 +424,7 @@ public class OsmosisBuilder {
 
         switch (controllerEntity.getTrafficPolicy()){
             case "FairShare":
-                sdnMapReducePolicy = new SDNMapReducePolicyFairShare();
+                sdnMapReducePolicy = new SDNTrafficPolicyFairShare();
                 break;
         }
 
@@ -445,11 +442,10 @@ public class OsmosisBuilder {
 			try {				
 
 				cloudletScheduler = (CloudletScheduler) Class.forName(cloudletSchedulerClassName).newInstance();
-				float datasizeShrinkFactor = melEntity.getDatasizeShrinkFactor();
-				String type = melEntity.getType();
+				float datasizeShrinkFactor = melEntity.getDatasizeShrinkFactor();				
 				MicroELement microELement = new MicroELement(edgeDatacenterId, vmId, broker.getId(), melEntity.getMips(),
-						melEntity.getPesNumber(), melEntity.getRam(), melEntity.getBw(), melEntity.getSize(),
-						melEntity.getVmm(), cloudletScheduler, type, datasizeShrinkFactor);				
+						melEntity.getPesNumber(), melEntity.getRam(), melEntity.getBw(),
+						melEntity.getVmm(), cloudletScheduler, datasizeShrinkFactor);				
 				microELement.setVmName(melEntity.getName());
 				vms.add(microELement);
 				vmId++;
