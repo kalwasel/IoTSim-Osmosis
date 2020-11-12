@@ -25,8 +25,8 @@ import org.cloudbus.cloudsim.edge.iot.network.EdgeNetworkInfo;
 
 public class CarSensor extends IoTDevice {
 	
-	public CarSensor(EdgeNetworkInfo networkModel, String name) {
-		super(name, networkModel);		
+	public CarSensor(EdgeNetworkInfo networkModel, String name, double bandwidth) {
+		super(name, networkModel, bandwidth);		
 	}
 
 	@Override

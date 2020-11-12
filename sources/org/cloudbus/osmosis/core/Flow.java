@@ -54,6 +54,7 @@ public class Flow {
 	private int ackEntity; // used to notify the respective destination of packet's completion -- khaled	 
 	private int datacenterId;
 	private double flowBandwidth = 0;
+
 	private String labelPlace; // used to identify the desintation of the flow (inside datacenters or outside datacenters)
 
 	private long osmesisEdgeletSize;
@@ -83,20 +84,27 @@ public class Flow {
 	private boolean packetOnWAN;
 	private boolean destReceived;
 	
+	/*
+	 * The bw variables are used to determine which one has less bw, 
+	 * which will be used as the main flow bw 
+	 */
+	private double sourceBw; 	
+	private double destBw;
+
 	public Flow(String vmNameSrc, String vmNameDest, int source, int destination, int flowId, String flowType) {		
 		this.appNameSrc = vmNameSrc;
 		this.appNameDest = vmNameDest;
 		this.source = source;
 		this.destination = destination;
 		this.flowId = flowId;	
-		this.flowType = flowType;				
+		this.flowType = flowType;		
 	}	
 
 	public double getTransmissionTime() {
 		return transmissionTime;
 	}
 	
-	public void setTransmissionTime(double transmissionTime) {		
+	public void setTransmissionTime(double transmissionTime) {				
 		this.transmissionTime = transmissionTime - this.startTime;
 	}
 	
@@ -349,8 +357,17 @@ public class Flow {
 		return inByte;
 	}
 	
-	public void updateBandwidth(double bandwidth) {
-		this.flowBandwidth = bandwidth;
+	public void updateBandwidth() {
+		double smallestBw = Double.MAX_VALUE;
+		if(this.getSourceBw() < smallestBw){
+			smallestBw = this.getSourceBw(); 
+		}
+		
+		if(this.getDestBw() < smallestBw){
+			smallestBw = this.getDestBw(); 
+		}
+		
+		this.flowBandwidth = smallestBw;
 	}	
 	
 	public double FinishingTime() {
@@ -385,7 +402,8 @@ public class Flow {
 		}
 		
 		if (amountToBeProcessed == 0){ 
-			transmissionTime = timeSpent;
+//			transmissionTime = timeSpent;
+			transmissionTime  = currentTime - this.startTime;
 			return true;
 		}
 		return false;
@@ -433,4 +451,24 @@ public class Flow {
 	public void setDatacenterName(String name) {
 		this.datacenterName = name;
 	}	
+
+	public double getFlowBandwidth() {
+		return flowBandwidth;
+	}
+	
+	public double getSourceBw() {
+		return sourceBw;
+	}
+
+	public void updateSourceBw(double sourceBw) {
+		this.sourceBw = sourceBw;
+	}
+	
+	public double getDestBw() {
+		return destBw;
+	}
+
+	public void updateDestBw(double destBw) {
+		this.destBw = destBw;
+	}
 }

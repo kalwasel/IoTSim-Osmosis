@@ -25,8 +25,8 @@ import org.cloudbus.cloudsim.edge.iot.network.EdgeNetworkInfo;
 
 public class VoiceSensor extends IoTDevice {
 
-	public VoiceSensor(EdgeNetworkInfo networkModel, String name) {
-		super(name, networkModel);		
+	public VoiceSensor(EdgeNetworkInfo networkModel, String name, double bandwidth) {
+		super(name, networkModel, bandwidth);		
 	}
 
 	@Override

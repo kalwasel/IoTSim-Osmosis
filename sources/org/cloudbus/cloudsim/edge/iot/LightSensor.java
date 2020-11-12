@@ -27,8 +27,8 @@ public class LightSensor extends IoTDevice {
 
 
 	
-	public LightSensor(EdgeNetworkInfo networkModel, String name) {
-		super(name, networkModel);		
+	public LightSensor(EdgeNetworkInfo networkModel, String name, double bandwidth) {
+		super(name, networkModel, bandwidth);		
 	}
 
 	@Override

@@ -17,7 +17,7 @@ import java.util.List;
 
 import org.cloudbus.cloudsim.CloudletScheduler;
 import org.cloudbus.cloudsim.Vm;
-import org.cloudbus.cloudsim.edge.core.edge.MicroELement;
+import org.cloudbus.cloudsim.edge.core.edge.MEL;
 import org.cloudbus.osmosis.core.Flow;
 
 /**
@@ -28,11 +28,12 @@ import org.cloudbus.osmosis.core.Flow;
  * 
 **/
 
-public class MicroELement extends Vm {
+public class MEL extends Vm {
 	
 	private int edgeDatacenterId;	
+	private double currentBw;
 
-	public MicroELement(int edgeDatacenterId, int id, int userId, double mips, int numberOfPes, int ram, long bw, String vmm,
+	public MEL(int edgeDatacenterId, int id, int userId, double mips, int numberOfPes, int ram, long bw, String vmm,
 			CloudletScheduler cloudletScheduler,float shrinkingFactor) {
 		super(id, userId, mips, numberOfPes, ram, bw, 2048,vmm, cloudletScheduler);
 		this.edgeDatacenterId = edgeDatacenterId;		
@@ -47,10 +48,7 @@ public class MicroELement extends Vm {
 		if(numOfFlows == 0){
 			numOfFlows = 1;
 		}
-		double bandwidth = this.getBw() / numOfFlows; // the updated bw 		
-		for(Flow getFlow : this.flowList){
-			getFlow.updateBandwidth(bandwidth);
-		}		
+		this.currentBw  = this.getBw() / numOfFlows; // the updated bw 				
 	}
 
 	private List<Flow> flowList = new ArrayList<>(); 
@@ -69,6 +67,11 @@ public class MicroELement extends Vm {
 	public void removeFlows(LinkedList<Flow> removedList) {
 		this.flowList.removeAll(removedList);
 		
+	}
+
+
+	public double getCurrentBw() {
+		return currentBw;
 	}
 
 }

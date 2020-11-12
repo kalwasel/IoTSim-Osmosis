@@ -97,7 +97,7 @@ public class EdgeDataCenter extends OsmesisDatacenter{
 		for(Flow flow : this.flowList){
 			boolean isCompleted = flow.updateTransmission();						
 			if(isCompleted){
-				finshedFlows.add(flow);	
+				finshedFlows.add(flow);				
 			}			
 		}
 		
@@ -105,19 +105,48 @@ public class EdgeDataCenter extends OsmesisDatacenter{
 			this.flowList.removeAll(finshedFlows);
 			
 			for(Vm vm : this.getVmList()){
-				MicroELement mel = (MicroELement) vm;				
-				this.removeFlows(mel, finshedFlows);
-				mel.updateAssociatedIoTDevices();
+				MEL mel = (MEL) vm;				
+				this.removeFlows(mel, finshedFlows);				
+				mel.updateAssociatedIoTDevices(); // update MEL Bw					
 			}
 			for(Flow flow : finshedFlows){
+				// update IoT device Bw
+				int tagRemoveFlow = OsmosisTags.updateIoTBW;		
+				sendNow(flow.getOrigin(), tagRemoveFlow, flow); // tell IoT device to update its bandwidth by removing this finished flow
+												
 				int tag = OsmosisTags.Transmission_ACK;		
 				sendNow(OsmesisBroker.brokerID, tag, flow);
-			}				
+			}
+			
+			updateAllFlowsBw();
 		}		
+		
 		determineEarliestFinishingFlow();
 	}
 	
-	private void removeFlows(MicroELement mel, LinkedList<Flow> finshedFlows) {
+	private void updateAllFlowsBw(){
+		// update the destination Bw of every flow 
+		
+		for(Flow flow : this.flowList){
+			for(Vm vm : this.getVmList()){
+			MEL mel = (MEL) vm;															
+				if(flow.getDestination()  == mel.getId() ){
+					mel.updateAssociatedIoTDevices();
+					double melCurrentBw = mel.getCurrentBw();
+					flow.updateDestBw(melCurrentBw);
+				}
+			}
+		}
+		
+		// update the main bw of every flow
+		for(Flow getFlow : this.flowList){
+			getFlow.updateBandwidth();
+//			System.out.println(CloudSim.clock + " the flow " + getFlow.getFlowId() + " left data to be transferred is " + getFlow.getAmountToBeProcessed() + 
+//					"; and BW is " + getFlow.getFlowBandwidth());
+		}
+	}
+	
+	private void removeFlows(MEL mel, LinkedList<Flow> finshedFlows) {
 		LinkedList<Flow> removedList = new LinkedList<>();
 		for (Flow flow : mel.getFlowList()){
 			for (Flow removedFlow : finshedFlows){
@@ -135,7 +164,10 @@ public class EdgeDataCenter extends OsmesisDatacenter{
 		
 		Flow flow = (Flow) ev.getData();		
 		flow.setDatacenterName(this.getName());
-		
+		if(flow.getStartTime() == -1){
+			flow.setStartTime(CloudSim.clock());	
+		}		
+
 		this.flowList.add(flow);
 		flowListHis.add(flow);
 		
@@ -148,10 +180,12 @@ public class EdgeDataCenter extends OsmesisDatacenter{
 		}	
 		
 		if(vm != null){
-			MicroELement mel = (MicroELement) vm;
+			MEL mel = (MEL) vm;
 			mel.addFlow(flow);
-			mel.updateAssociatedIoTDevices();
-		}
+		}		
+		
+		updateAllFlowsBw();
+		
 		flow.setPreviousTime(CloudSim.clock());
 		determineEarliestFinishingFlow();
 	}
@@ -168,7 +202,7 @@ public class EdgeDataCenter extends OsmesisDatacenter{
 				if(finishingTime < eft){
 					eft = finishingTime;
 				}
-			}
+			}			
 			send(this.getId(), eft,  OsmosisTags.INTERNAL_EVENT);
 		}
 	}

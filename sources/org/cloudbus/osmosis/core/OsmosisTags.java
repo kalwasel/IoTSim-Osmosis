@@ -50,5 +50,6 @@ public class OsmosisTags {
 	
 	public static final int SENSING = Osmosis_BASE + 24;
 	public static final int MOVING = Osmosis_BASE + 25;
+	public static final int updateIoTBW = Osmosis_BASE + 26;
 
 }

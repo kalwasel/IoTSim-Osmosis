@@ -183,7 +183,7 @@ public class PrintResults {
 	public void printOsmesisApp(List<WorkflowInfo> tags) {
 		Log.printLine();				
 		Log.printLine("=========================== Osmesis App Results ========================");
-		Log.printLine(String.format("%1s %11s %18s %17s %17s %19s %20s %35s %37s %21s %33s %21s %23s %28s %20s %30s %25s %10s"
+		Log.printLine(String.format("%1s %11s %18s %17s %17s %19s %20s %35s %37s %21s %29s %29s %33s %21s %23s %28s %20s %30s %25s %10s"
 				,"App_ID"
 				,"AppName"
 				,"Transaction"
@@ -194,6 +194,8 @@ public class PrintResults {
 				,"DataSizeIoTDeviceToMEL_Mb"  
 				,"TransmissionTimeIoTDeviceToMEL"
 				,"EdgeLetMISize"
+				,"EdgeLet_MEL_StartTime"
+				,"EdgeLet_MEL_FinishTime"
 				,"EdgeLetProccessingTimeByMEL"				  
 				,"DestinationVmName"
 				,"DataSizeMELToVM_Mb"
@@ -207,24 +209,26 @@ public class PrintResults {
 		for(WorkflowInfo workflowTag : tags){			
 			transactionTotalTime =  workflowTag.getIotDeviceFlow().getTransmissionTime() + workflowTag.getEdgeLet().getActualCPUTime()
 					+ workflowTag.getEdgeToCloudFlow().getTransmissionTime() + workflowTag.getCloudLet().getActualCPUTime();
-			Log.printLine(String.format("%1s %15s %15s %18s %18s %21s %23s %21s %34s %32s %25s %30s %18s %26s %23s %24s %28s"
+			Log.printLine(String.format("%1s %15s %15s %18s %18s %21s %23s %21s %34s %32s %24s %28s %31s %30s %18s %26s %23s %24s %28s"
 					, workflowTag.getAppId()
 					, workflowTag.getAppName()
 					, workflowTag.getWorkflowId()	
-					, workflowTag.getSartTime()
-					, new DecimalFormat("0.0000").format(workflowTag.getFinishTime())
+					, new DecimalFormat("0.00").format(workflowTag.getSartTime())
+					, new DecimalFormat("0.00").format(workflowTag.getFinishTime())
 					, workflowTag.getIotDeviceFlow().getAppNameSrc() 
 					, workflowTag.getIotDeviceFlow().getAppNameDest() + " (" +workflowTag.getSourceDCName() + ")"
 					, workflowTag.getIotDeviceFlow().getSize()
-					, new DecimalFormat("0.0000").format(workflowTag.getIotDeviceFlow().getTransmissionTime())
+					, new DecimalFormat("0.00").format(workflowTag.getIotDeviceFlow().getTransmissionTime())
 					, workflowTag.getEdgeLet().getCloudletLength()
-					, new DecimalFormat("0.0000").format(workflowTag.getEdgeLet().getActualCPUTime())
+					, new DecimalFormat("0.00").format(workflowTag.getEdgeLet().getExecStartTime())
+					, new DecimalFormat("0.00").format(workflowTag.getEdgeLet().getFinishTime())
+					, new DecimalFormat("0.00").format(workflowTag.getEdgeLet().getActualCPUTime())
 					, workflowTag.getEdgeToCloudFlow().getAppNameDest() + " (" +workflowTag.getDestinationDCName() + ")"
 					, workflowTag.getEdgeToCloudFlow().getSize()
-					, new DecimalFormat("0.0000").format(workflowTag.getEdgeToCloudFlow().getTransmissionTime())
+					, new DecimalFormat("0.00").format(workflowTag.getEdgeToCloudFlow().getTransmissionTime())
 					, workflowTag.getCloudLet().getCloudletLength()
-					, new DecimalFormat("0.0000").format(workflowTag.getCloudLet().getActualCPUTime())
-					, new DecimalFormat("0.0000").format(transactionTotalTime)));
+					, new DecimalFormat("0.00").format(workflowTag.getCloudLet().getActualCPUTime())
+					, new DecimalFormat("0.00").format(transactionTotalTime)));
 		}
 	}	
 }

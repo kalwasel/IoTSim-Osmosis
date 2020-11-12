@@ -17,7 +17,7 @@ import org.cloudbus.cloudsim.*;
 import org.cloudbus.cloudsim.edge.core.edge.ConfiguationEntity;
 import org.cloudbus.cloudsim.edge.core.edge.EdgeDataCenter;
 import org.cloudbus.cloudsim.edge.core.edge.EdgeDevice;
-import org.cloudbus.cloudsim.edge.core.edge.MicroELement;
+import org.cloudbus.cloudsim.edge.core.edge.MEL;
 import org.cloudbus.cloudsim.edge.core.edge.Mobility;
 import org.cloudbus.cloudsim.edge.core.edge.ConfiguationEntity.CloudDataCenterEntity;
 import org.cloudbus.cloudsim.edge.core.edge.ConfiguationEntity.ControllerEntity;
@@ -393,10 +393,10 @@ public class OsmosisBuilder {
 			
 			datacenter.setGateway(datacenter.getSdnController().getGateway());
 			
-			List<MicroELement> MELList = createMEL(edgeDCEntity.getMELEntities(), datacenter.getId(), this.broker);
+			List<MEL> MELList = createMEL(edgeDCEntity.getMELEntities(), datacenter.getId(), this.broker);
 			datacenter.setVmList(MELList);
 			
-			for(MicroELement mel : MELList){
+			for(MEL mel : MELList){
 				datacenter.mapVmNameToID(mel.getId(), mel.getVmName());
 			}
 			
@@ -433,8 +433,8 @@ public class OsmosisBuilder {
         return sdnController;
     }
     
-	private List<MicroELement> createMEL(List<MELEntities> melEntities, int edgeDatacenterId, OsmesisBroker broker) {		
-		List<MicroELement> vms = new ArrayList<>();
+	private List<MEL> createMEL(List<MELEntities> melEntities, int edgeDatacenterId, OsmesisBroker broker) {		
+		List<MEL> vms = new ArrayList<>();
 		for (MELEntities melEntity : melEntities) {
 
 			String cloudletSchedulerClassName = melEntity.getCloudletSchedulerClassName();
@@ -443,7 +443,7 @@ public class OsmosisBuilder {
 
 				cloudletScheduler = (CloudletScheduler) Class.forName(cloudletSchedulerClassName).newInstance();
 				float datasizeShrinkFactor = melEntity.getDatasizeShrinkFactor();				
-				MicroELement microELement = new MicroELement(edgeDatacenterId, vmId, broker.getId(), melEntity.getMips(),
+				MEL microELement = new MEL(edgeDatacenterId, vmId, broker.getId(), melEntity.getMips(),
 						melEntity.getPesNumber(), melEntity.getRam(), melEntity.getBw(),
 						melEntity.getVmm(), cloudletScheduler, datasizeShrinkFactor);				
 				microELement.setVmName(melEntity.getName());
@@ -470,9 +470,9 @@ public class OsmosisBuilder {
 					System.out.println("this class is not correct type of ioT Device");
 					return null;
 				}
-				Constructor<?> constructor = clazz.getConstructor(EdgeNetworkInfo.class, String.class);
+				Constructor<?> constructor = clazz.getConstructor(EdgeNetworkInfo.class, String.class, double.class);
 	
-					IoTDevice newInstance = (IoTDevice) constructor.newInstance(networkModel, iotDevice.getName());		
+					IoTDevice newInstance = (IoTDevice) constructor.newInstance(networkModel, iotDevice.getName(), iotDevice.getBw());		
 					newInstance.getBattery().setMaxCapacity(iotDevice.getMax_battery_capacity());
 					newInstance.getBattery().setCurrentCapacity(iotDevice.getMax_battery_capacity());
 					newInstance.getBattery().setBatterySensingRate(iotDevice.getBattery_sensing_rate());

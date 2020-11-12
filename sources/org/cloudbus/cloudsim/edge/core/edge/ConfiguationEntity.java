@@ -183,6 +183,7 @@ public class ConfiguationEntity {
 		double battery_sending_rate;		
 		double processingAbility;
 		EdgeLetEntity dataTemplate;
+		double bw;
 
 	}
 

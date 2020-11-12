@@ -121,7 +121,7 @@ public class OsmesisBroker extends DatacenterBroker {
 		edgeLet.setOsmesisAppId(appId);
 		edgeLet.setWorkflowTag(flow.getWorkflowTag());
 		edgeLet.getWorkflowTag().setEdgeLet(edgeLet);		
-		this.setCloudletSubmittedList(edgeletList);
+		this.setCloudletSubmittedList(edgeletList);		
 		sendNow(flow.getDatacenterId(), CloudSimTags.CLOUDLET_SUBMIT, edgeLet);
 	}
 	
@@ -229,7 +229,7 @@ public class OsmesisBroker extends DatacenterBroker {
 				if(app.getAppStartTime() == -1){
 					app.setAppStartTime(CloudSim.clock());
 				}				
-				sendNow(iotDeviceID, OsmosisTags.SENSING, app);
+//				sendNow(iotDeviceID, OsmosisTags.SENSING, app);
 				double dealy = app.getDataRate();
 				send(this.getId(), dealy, OsmosisTags.GENERATE_OSMESIS, app);
 			}

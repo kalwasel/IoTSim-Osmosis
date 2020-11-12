@@ -26,8 +26,8 @@ import org.cloudbus.cloudsim.edge.iot.network.EdgeNetworkInfo;
 public class TemperatureSensor extends IoTDevice {
 
 
-	public TemperatureSensor(EdgeNetworkInfo networkModel, String name) {
-		super(name, networkModel);		
+	public TemperatureSensor(EdgeNetworkInfo networkModel, String name, double bandwidth) {
+		super(name, networkModel, bandwidth);		
 	}
 
 	@Override

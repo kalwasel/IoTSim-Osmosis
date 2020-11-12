@@ -11,6 +11,9 @@
 
 package org.cloudbus.cloudsim.edge.iot;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsim.core.SimEntity;
 import org.cloudbus.cloudsim.core.SimEvent;
@@ -47,12 +50,18 @@ public abstract class IoTDevice extends SimEntity {
 	private boolean enabled;
 	public abstract boolean updateBatteryBySensing();
 	public abstract boolean updateBatteryByTransmission();
+	private double bw;
+	private double usedBw; 
 
-	public IoTDevice( String name, EdgeNetworkInfo networkModel) {
+	
+	private List<Flow> flowList = new ArrayList<>(); 
+	
+	public IoTDevice( String name, EdgeNetworkInfo networkModel, double bandwidth) {
 		super(name);
 		this.battery = new Battery();	
 		this.networkModel = networkModel;
-		this.enabled = true;				
+		this.enabled = true;		
+		this.bw = bandwidth;
 	}
 	
 	@Override
@@ -65,6 +74,10 @@ public abstract class IoTDevice extends SimEntity {
 		switch (tag) {
 		case OsmosisTags.SENSING:
 			this.sensing(ev);
+			break;
+			
+		case  OsmosisTags.updateIoTBW:
+			this.removeFlow(ev);
 			break;
 
 		case OsmosisTags.MOVING:
@@ -151,7 +164,8 @@ public abstract class IoTDevice extends SimEntity {
 		flow.setWorkflowTag(workflowTag);
 		OsmesisBroker.workflowTag.add(workflowTag);
 		flow.addPacketSize(app.getIoTDeviceOutputSize());			
-
+		updateBandwidth();
+		
 		sendNow(flow.getDatacenterId(), OsmosisTags.TRANSMIT_IOT_DATA, flow);		
 	}
 
@@ -168,7 +182,35 @@ public abstract class IoTDevice extends SimEntity {
 		flow.setDatacenterId(datacenterId);
 		flow.setOsmesisEdgeletSize(app.getOsmesisEdgeletSize());
 		OsmosisBuilder.flowId++;
-	
+		flowList.add(flow);
+		
 		return flow;
+	}
+	
+	public void setBw(double bw) {
+		this.bw = bw;
+	}
+	
+	public double getBw() {
+		return bw;
+	}
+	
+	public double getUsedBw() {
+		return usedBw;
+	}
+	
+	public void removeFlow(SimEvent ev) {
+		
+		Flow flow  = (Flow) ev.getData();
+		this.flowList.remove(flow);
+		
+		updateBandwidth();	
+	}
+	
+	private void updateBandwidth(){			
+		this.usedBw = this.getBw() / this.flowList.size(); // the updated bw 		
+		for(Flow getFlow : this.flowList){
+			getFlow.updateSourceBw(this.usedBw);
+		}	
 	}
 }

@@ -12,7 +12,7 @@ import org.cloudbus.cloudsim.core.CloudSimTags;
 import org.cloudbus.cloudsim.core.SimEntity;
 import org.cloudbus.cloudsim.core.SimEvent;
 import org.cloudbus.cloudsim.edge.core.edge.EdgeDataCenter;
-import org.cloudbus.cloudsim.edge.core.edge.MicroELement;
+import org.cloudbus.cloudsim.edge.core.edge.MEL;
 import org.cloudbus.osmosis.core.EdgeSDNController;
 import org.cloudbus.osmosis.core.OsmesisBroker;
 

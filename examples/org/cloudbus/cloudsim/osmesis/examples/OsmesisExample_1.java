@@ -22,7 +22,7 @@ import org.cloudbus.cloudsim.Log;
 import org.cloudbus.cloudsim.Vm;
 import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsim.edge.core.edge.ConfiguationEntity;
-import org.cloudbus.cloudsim.edge.core.edge.MicroELement;
+import org.cloudbus.cloudsim.edge.core.edge.MEL;
 import org.cloudbus.cloudsim.edge.utils.LogUtil;
 import org.cloudbus.cloudsim.osmesis.examples.uti.LogPrinter;
 import org.cloudbus.cloudsim.osmesis.examples.uti.PrintResults;
@@ -50,7 +50,7 @@ public class OsmesisExample_1 {
     OsmosisBuilder topologyBuilder;
 	OsmesisBroker osmesisBroker;
 	List<OsmesisDatacenter> datacenters;
-	List<MicroELement> melList;	
+	List<MEL> melList;	
 	EdgeSDNController edgeSDNController;
 	List<Vm> vmList;
 
