@@ -12,6 +12,10 @@
 package org.cloudbus.osmosis.core;
 
 import org.cloudbus.cloudsim.edge.core.edge.EdgeLet;
+import org.cloudbus.osmosis.core.OsmosisLayer;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Track every transaction from an IoT device until it reaches the cloud and got processed. 
@@ -24,20 +28,22 @@ import org.cloudbus.cloudsim.edge.core.edge.EdgeLet;
 **/
 
 public class WorkflowInfo {
+
 	private int workflowId;	// create a new ID every time an IoT device generates data
 	private int appId;
 	private String appName;
-	
-	private Flow iotDeviceFlow;
-	
-	private Flow edgeToCloudFlow;
-	private EdgeLet edgeLet;
-	private EdgeLet cloudLet;
-	
-	private String sourceDatacenterName;
-	private String DestinationDatacenterName;
+
+
+	private List<Flow> osmosisFlow = new ArrayList<>(); // 0 = iotDeviceFlow, 1 = edgeToedgeFlow, 2 = edgeToCloudFlow, etc.
+
+	private List<EdgeLet> osmosisletList = new ArrayList<>();
+	private List<String> melDatacenters = new ArrayList<>();
+
 	private double startTime;
 	private double finishTime;
+	private OsmesisAppDescription app;
+
+	private int numOfLayer = 0;
 
 	public int getWorkflowId() {
 		return workflowId;
@@ -58,41 +64,36 @@ public class WorkflowInfo {
 	public void setAppName(String appName) {
 		this.appName = appName;
 	}
-	public Flow getIotDeviceFlow() {
-		return iotDeviceFlow;
+
+	public Flow getOsmosisFlow(int index) {
+		return 	this.osmosisFlow.get(index);
 	}
-	public void setIotDeviceFlow(Flow iotDeviceFlow) {
-		this.iotDeviceFlow = iotDeviceFlow;
+	public void setOsmosisFlow(Flow flow) {
+		this.osmosisFlow.add(flow);
 	}
-	public Flow getEdgeToCloudFlow() {
-		return edgeToCloudFlow;
+
+	public List<Flow> getFlowLists(){
+		return this.osmosisFlow;
 	}
-	public void setEdgeToCloudFlow(Flow edgeToCloudFlow) {
-		this.edgeToCloudFlow = edgeToCloudFlow;
+
+	public void addEdgeLet(EdgeLet edgeLet) {
+		osmosisletList.add(edgeLet);
 	}
-	public EdgeLet getEdgeLet() {
-		return edgeLet;
+
+	public EdgeLet getOsmosislet(int index){
+		return this.osmosisletList.get(index);
 	}
-	public void setEdgeLet(EdgeLet edgeLet) {
-		this.edgeLet = edgeLet;
+
+	public int getOsmosisLetSize(){
+		return this.osmosisletList.size();
 	}
-	public EdgeLet getCloudLet() {
-		return cloudLet;
+
+	public void setDCName(String dcName) {
+		this.melDatacenters.add(dcName);
 	}
-	public void setCloudLet(EdgeLet cloudLet) {
-		this.cloudLet = cloudLet;
-	}
-	public String getSourceDCName() {
-		return this.sourceDatacenterName;
-	}
-	public void setSourceDCName(String sourceDatacenterName) {
-		this.sourceDatacenterName = sourceDatacenterName;
-	}
-	public String getDestinationDCName() {
-		return DestinationDatacenterName;
-	}
-	public void setDestinationDCName(String DestinationDatacenterName) {
-		this.DestinationDatacenterName = DestinationDatacenterName;
+
+	public String getDCName(int num) {
+		return this.melDatacenters.get(num);
 	}
 	
 	public double getSartTime() {
@@ -110,5 +111,26 @@ public class WorkflowInfo {
 	
 	public double getFinishTime() {
 		return finishTime;
-	}	
+	}
+
+	public void setApp(OsmesisAppDescription app) {
+		this.app = app;
+	}
+
+	public OsmosisLayer getOsmosisLayer() {
+		this.numOfLayer += 1; // always start with 1 (edge layer)
+		return this.app.getOsmosisLayer(this.numOfLayer);
+	}
+
+	public OsmosisLayer getOsmosisNextLayer() {
+		int nextLayer = this.numOfLayer +1;
+		return this.app.getOsmosisLayer(nextLayer);
+	}
+
+	public boolean checkOsmosisLayer(){
+		if((this.numOfLayer +1) == this.app.getOsmosisLayerSize()){
+			return true;
+		}
+		return false;
+	}
 }

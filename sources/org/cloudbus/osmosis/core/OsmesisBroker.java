@@ -24,6 +24,7 @@ import org.cloudbus.cloudsim.core.CloudSimTags;
 import org.cloudbus.cloudsim.core.SimEvent;
 import org.cloudbus.cloudsim.edge.core.edge.EdgeLet;
 import org.cloudbus.cloudsim.edge.iot.IoTDevice;
+import org.cloudbus.osmosis.core.OsmosisLayer;
 
 /**
  * 
@@ -44,10 +45,11 @@ public class OsmesisBroker extends DatacenterBroker {
 	private Map<String, Integer> iotVmIdByName = new HashMap<>();
 	public static List<WorkflowInfo> workflowTag = new ArrayList<>();
 	private List<OsmesisDatacenter> datacenters = new ArrayList<>();
-	
+
+
 	public OsmesisBroker(String name) {
 		super(name);
-		this.appList = new ArrayList<>();		
+		this.appList = new ArrayList<>();
 		brokerID = this.getId();
 	}
 
@@ -65,114 +67,125 @@ public class OsmesisBroker extends DatacenterBroker {
 		case CloudSimTags.RESOURCE_CHARACTERISTICS_REQUEST:
 			this.processResourceCharacteristicsRequest(ev);
 			break;
-			
+
 		case CloudSimTags.RESOURCE_CHARACTERISTICS:
 			this.processResourceCharacteristics(ev);
 			break;
-			
+
 		case CloudSimTags.VM_CREATE_ACK:
-			this.processVmCreate(ev);			
+			this.processVmCreate(ev);
 			break;
-			
+
 		case OsmosisTags.GENERATE_OSMESIS:
 			generateIoTData(ev);
 			break;
-			
+
 		case OsmosisTags.Transmission_ACK:
 			askMelToProccessData(ev);
 			break;
-			
+
 		case CloudSimTags.CLOUDLET_RETURN:
 			processCloudletReturn(ev);
 			break;
-			
+
 		case OsmosisTags.Transmission_SDWAN_ACK:
-			askCloudVmToProccessData(ev);
+			proccessReceivedData(ev);
 			break;
-				
+
 		case CloudSimTags.END_OF_SIMULATION:
 			this.shutdownEntity();
 			break;
-			
+
 		default:
 			break;
 		}
 	}
 	protected void processCloudletReturn(SimEvent ev)
 	{
-		Cloudlet cloudlet = (Cloudlet) ev.getData();						
+		Cloudlet cloudlet = (Cloudlet) ev.getData();
 		getCloudletReceivedList().add(cloudlet);
-		EdgeLet edgeLet = (EdgeLet) ev.getData();	
-		if(!edgeLet.getIsFinal()){	
-			askMelToSendDataToCloud(ev);			
-			return;
-		}	
-		edgeLet.getWorkflowTag().setFinishTime(CloudSim.clock());							
+		EdgeLet edgeLet = (EdgeLet) ev.getData();
+		edgeLet.getWorkflowTag().setFinishTime(CloudSim.clock());
+		askMelToSendData(ev); // send to another edge datacenter
 	}
-	
+
 	private void askMelToProccessData(SimEvent ev) {
-		Flow flow = (Flow) ev.getData();		
-		EdgeLet edgeLet = generateEdgeLet(flow.getOsmesisEdgeletSize());
-		edgeLet.setVmId(flow.getDestination());
-		edgeLet.setCloudletLength(flow.getOsmesisEdgeletSize());
-		edgeLet.isFinal(false);
-		edgeletList.add(edgeLet);
+
+		Flow flow = (Flow) ev.getData();
+		// it can be any edge let size, it is fine...
 		int appId = flow.getOsmesisAppId();
+		OsmesisAppDescription app = getAppById(appId);
+
+		long edgeletSize = flow.getOsmesisEdgeletSize(); // the size can be for edgelet or cloudlet
+		EdgeLet edgeLet = generateEdgeLet(edgeletSize);
+
+		edgeLet.setVmId(flow.getDestination());
+		edgeletList.add(edgeLet);
 		edgeLet.setOsmesisAppId(appId);
 		edgeLet.setWorkflowTag(flow.getWorkflowTag());
-		edgeLet.getWorkflowTag().setEdgeLet(edgeLet);		
-		this.setCloudletSubmittedList(edgeletList);		
+		edgeLet.getWorkflowTag().addEdgeLet(edgeLet);
+		this.setCloudletSubmittedList(edgeletList);
+
 		sendNow(flow.getDatacenterId(), CloudSimTags.CLOUDLET_SUBMIT, edgeLet);
 	}
-	
-	private EdgeLet generateEdgeLet(long length) {				
-		long fileSize = 30;
-		long outputSize = 1;		
-		EdgeLet edgeLet = new EdgeLet(OsmosisBuilder.edgeLetId, length, 1, fileSize, outputSize, new UtilizationModelFull(), new UtilizationModelFull(),
-				new UtilizationModelFull());			
-		edgeLet.setUserId(this.getId());
-		OsmosisBuilder.edgeLetId++;																
-		return edgeLet;
-	}	
 
-	protected void askCloudVmToProccessData(SimEvent ev) {
-		Flow flow = (Flow) ev.getData();		
-		int appId = flow.getOsmesisAppId();		
-		int dest = flow.getDestination();				
-		OsmesisAppDescription app = getAppById(appId);
-		long length = app.getOsmesisCloudletSize();		
-		EdgeLet cloudLet =	generateEdgeLet(length);							
-		cloudLet.setVmId(dest);
-		cloudLet.isFinal(true);			
-		edgeletList.add(cloudLet);		
-		cloudLet.setOsmesisAppId(appId);
-		cloudLet.setWorkflowTag(flow.getWorkflowTag());
-		cloudLet.getWorkflowTag().setCloudLet(cloudLet);		
-		this.setCloudletSubmittedList(edgeletList);		
-		cloudLet.setUserId(OsmesisBroker.brokerID);								
-		this.setCloudletSubmittedList(edgeletList);
-		int dcId = getDatacenterIdByVmId(dest);
-		sendNow(dcId, CloudSimTags.CLOUDLET_SUBMIT, cloudLet);
+	private EdgeLet generateEdgeLet(long length) {
+		long fileSize = 30;
+		long outputSize = 1;
+		EdgeLet edgeLet = new EdgeLet(OsmosisBuilder.edgeLetId, length, 1, fileSize, outputSize, new UtilizationModelFull(), new UtilizationModelFull(),
+				new UtilizationModelFull());
+		edgeLet.setUserId(this.getId());
+		OsmosisBuilder.edgeLetId++;
+		return edgeLet;
 	}
 
-	private void askMelToSendDataToCloud(SimEvent ev) {
-		EdgeLet edgeLet = (EdgeLet) ev.getData();		
-		int osmesisAppId = edgeLet.getOsmesisAppId();		
+	protected void proccessReceivedData(SimEvent ev) {
+		Flow flow = (Flow) ev.getData();
+		askMelToProccessData(ev); // proccess data in a MEL
+	}
+
+	private void askMelToSendData(SimEvent ev) {
+		EdgeLet edgeLet = (EdgeLet) ev.getData();
+		int osmesisAppId = edgeLet.getOsmesisAppId();
 		OsmesisAppDescription app = getAppById(osmesisAppId);
-		int sourceId = edgeLet.getVmId(); // MEL or VM  			
-		int destId = this.getVmIdByName(app.getVmName()); // MEL or VM
-		int id = OsmosisBuilder.flowId ;		
-		int melDataceneter = this.getDatacenterIdByVmId(sourceId);		
-		Flow flow  = new Flow(app.getMELName(), app.getVmName(), sourceId , destId, id, null);									
+
+		OsmosisLayer layer = edgeLet.getWorkflowTag().getOsmosisLayer();
+
+		if(edgeLet.getWorkflowTag().checkOsmosisLayer()){
+			// it is in stage 3, which there is no further processing
+			return;
+		}
+		String destDCName = layer.getDestLayerName();
+		int sourceDcId = this.getDatacenterIdByName(layer.getSourceLayerName());
+		int destDcId = this.getDatacenterIdByName(layer.getDestLayerName());
+		String sourceName = layer.getSourceName();
+		String destName = layer.getDestName();
+		int sourceId = this.getVmIdByName(sourceName); // e.g. MEL 1
+		int destId = this.getVmIdByName(destName); // e.g. MEL 2
+		long flowSize = layer.getOsmoticPktSize();
+
+		// get next layer osmosislet size
+		OsmosisLayer nextLayer = edgeLet.getWorkflowTag().getOsmosisNextLayer();
+		long edgeletSize = nextLayer.getOsmoticLetSize();
+
+		int id = OsmosisBuilder.flowId ;
+
+		Flow flow  = new Flow(sourceName, destName, sourceId , destId, id, null);
 		flow.setAppName(app.getAppName());
-		flow.addPacketSize(app.getMELOutputSize());
+		flow.addPacketSize(flowSize);
 		flow.setSubmitTime(CloudSim.clock());
-		flow.setOsmesisAppId(osmesisAppId);				
+		flow.setDatacenterId(destDcId);
+		flow.setOsmesisAppId(osmesisAppId);
 		flow.setWorkflowTag(edgeLet.getWorkflowTag());
-		flow.getWorkflowTag().setEdgeToCloudFlow(flow);		
-		OsmosisBuilder.flowId++; 					
-		sendNow(melDataceneter, OsmosisTags.BUILD_ROUTE, flow);			
-	}	
+
+		flow.getWorkflowTag().setOsmosisFlow(flow);
+
+		flow.getWorkflowTag().setDCName(destDCName);
+
+		flow.setOsmesisEdgeletSize(edgeletSize); // renewable example
+		OsmosisBuilder.flowId++;
+		sendNow(sourceDcId, OsmosisTags.BUILD_ROUTE, flow);
+	}
 
 	private OsmesisAppDescription getAppById(int osmesisAppId) {
 		OsmesisAppDescription osmesis = null;
@@ -183,7 +196,6 @@ public class OsmesisBroker extends DatacenterBroker {
 		}
 		return osmesis;
 	}
-
 	
 	public void submitVmList(List<? extends Vm> list, int datacenterId) {		
 		mapVmsToDatacenter.put(datacenterId, list);
@@ -209,36 +221,42 @@ public class OsmesisBroker extends DatacenterBroker {
 	protected void processOtherEvent(SimEvent ev) {
 
 	}
-	
+
 	@Override
 	public void processVmCreate(SimEvent ev) {
 		super.processVmCreate(ev);
-		if (allRequestedVmsCreated()) {		
-			for(OsmesisAppDescription app : this.appList){				
-				int iotDeviceID = getiotDeviceIdByName(app.getIoTDeviceName());
-				int melId = getVmIdByName(app.getMELName());								
-				int vmIdInCloud = this.getVmIdByName(app.getVmName());			
-				app.setIoTDeviceId(iotDeviceID);	
-				app.setMelId(melId);				
-				int edgeDatacenterId = this.getDatacenterIdByVmId(melId);		
+		if (allRequestedVmsCreated()) {
+			for(OsmesisAppDescription app : this.appList){
+				OsmosisLayer IoTLayer = app.getIoTLayer();
+
+				int iotDeviceID = getiotDeviceIdByName(IoTLayer.getSourceName()); // IoT device name
+				int melId = getVmIdByName(IoTLayer.getDestName());
+
+				int edgeDatacenterId = this.getDatacenterIdByVmId(melId);
+
+				IoTLayer.setSourceId(iotDeviceID);
+				IoTLayer.setDestId(melId);
+				IoTLayer.setDestLayerId(edgeDatacenterId);
+
+
+				app.setIoTDeviceId(iotDeviceID);
+				app.setMelId(melId);
 				app.setEdgeDcId(edgeDatacenterId);
-				app.setEdgeDatacenterName(this.getDatacenterNameById(edgeDatacenterId));				
-				int cloudDatacenterId = this.getDatacenterIdByVmId(vmIdInCloud);				
-				app.setCloudDcId(cloudDatacenterId);
-				app.setCloudDatacenterName(this.getDatacenterNameById(cloudDatacenterId));				
 				if(app.getAppStartTime() == -1){
 					app.setAppStartTime(CloudSim.clock());
-				}				
-//				sendNow(iotDeviceID, OsmosisTags.SENSING, app);
+				}
 				double dealy = app.getDataRate();
 				send(this.getId(), dealy, OsmosisTags.GENERATE_OSMESIS, app);
 			}
 		}
-	}	
+	}
 
+	static int count =0;
 	private void generateIoTData(SimEvent ev){
 		OsmesisAppDescription app = (OsmesisAppDescription) ev.getData();
-		if(CloudSim.clock() < app.getStopDataGenerationTime() && !app.getIsIoTDeviceDied()){
+		count++;
+		if(CloudSim.clock() <= app.getStopDataGenerationTime() && !app.getIsIoTDeviceDied()){
+			System.out.println("Generating data " + count);
 			sendNow(app.getIoTDeviceId(), OsmosisTags.SENSING, app);
 			double dealy = app.getDataRate();
 			send(this.getId(), dealy, OsmosisTags.GENERATE_OSMESIS, app);
@@ -299,4 +317,15 @@ public class OsmesisBroker extends DatacenterBroker {
 		}
 		return name;
 	}
+
+	private int getDatacenterIdByName(String name){
+		int id =-1;
+		for(OsmesisDatacenter dc :datacenters){
+			if(dc.getName().equals(name)){
+				id = dc.getId();
+			}
+		}
+		return id;
+	}
+
 }

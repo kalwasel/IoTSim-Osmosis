@@ -28,6 +28,7 @@ import org.cloudbus.osmosis.core.OsmosisBuilder;
 import org.cloudbus.osmosis.core.OsmosisTags;
 import org.cloudbus.osmosis.core.WorkflowInfo;
 import org.cloudbus.osmosis.core.polocies.MovingPolicy;
+import org.cloudbus.osmosis.core.OsmosisLayer;
 
 /**
  * 
@@ -151,39 +152,67 @@ public abstract class IoTDevice extends SimEntity {
 			return;
 		}
 
-		Flow flow = this.createFlow(app);	
-		
+		Flow flow = this.createFlow(app);
+
+		OsmosisLayer IoTLayer = app.getIoTLayer(); // get IoT layer
+
 		WorkflowInfo workflowTag = new WorkflowInfo();
 		workflowTag.setStartTime(CloudSim.clock());
 		workflowTag.setAppId(app.getAppID());
 		workflowTag.setAppName(app.getAppName());
-		workflowTag.setIotDeviceFlow(flow);
+		workflowTag.setOsmosisFlow(flow);
 		workflowTag.setWorkflowId(app.addWorkflowId(1));
-		workflowTag.setSourceDCName(app.getEdgeDatacenterName());
-		workflowTag.setDestinationDCName(app.getCloudDatacenterName());
+//		workflowTag.setDCName(app.getDatacenterName(app.getMELName()));
+//		workflowTag.setDCName(app.getDatacenterName(app.getMELName()));
+		workflowTag.setDCName(IoTLayer.getDestLayerName()); // mel 1
+//		workflowTag.setDestinationDCName(app.getDatacenterName(1));
+//		workflowTag.setNumOfLayer(0); // always starts with 0 (IoT layer)
+		workflowTag.setApp(app); // always starts with 0 (IoT layer)
 		flow.setWorkflowTag(workflowTag);
 		OsmesisBroker.workflowTag.add(workflowTag);
-		flow.addPacketSize(app.getIoTDeviceOutputSize());			
+//		flow.addPacketSize(app.getIoTDeviceOutputSize());
+		flow.addPacketSize(IoTLayer.getOsmoticPktSize());
 		updateBandwidth();
-		
+//		System.out.println("IoT device is sending data #" + workflowTag.getWorkflowId());
+//		if(workflowTag.getWorkflowId() == 49){
+//			int cc=1;
+//		}
 		sendNow(flow.getDatacenterId(), OsmosisTags.TRANSMIT_IOT_DATA, flow);		
 	}
 
 	private Flow createFlow(OsmesisAppDescription app) {
-		int melId = app.getMelId();
-		int datacenterId = -1;
-		datacenterId = app.getEdgeDcId();					
+//		int melId = app.getMelId();
+//		int datacenterId = -1;
+//		datacenterId = app.getEdgeDcId();
 		int id = OsmosisBuilder.flowId ;
-		Flow flow  = new Flow(this.getName(),app.getMELName(), this.getId(), melId, id, null);	
+
+		OsmosisLayer IoTLayer = app.getIoTLayer(); // get IoT layer
+
+		String destDCName = IoTLayer.getDestLayerName();
+//		int sourceDcId = this.getDatacenterIdByName(IoTLayer.getSourceLayerName());
+//		int destDcId = this.getDatacenterIdByName(IoTLayer.getDestLayerName());
+//		String sourceName = IoTLayer.getSourceName();
+		String destName = IoTLayer.getDestName();
+
+		int sourceId = IoTLayer.getSourceId(); // e.g. MEL 1
+		int destId = IoTLayer.getDestId(); // e.g. MEL 2
+		int datacenterId = IoTLayer.getDestLayerId();
+
+		long flowSize = IoTLayer.getOsmoticPktSize();
+
+		OsmosisLayer edgeLayer = app.getOsmosisLayer(1); // get IoT layer
+		long edgeletSize = edgeLayer.getOsmoticLetSize();
+
+
+		Flow flow  = new Flow(this.getName(), destName, this.getId(), destId, id, null);
 		flow.setOsmesisAppId(app.getAppID());
 		flow.setAppName(app.getAppName());		
-		flow.addPacketSize(app.getIoTDeviceOutputSize());
+		flow.addPacketSize(flowSize);
 		flow.setSubmitTime(CloudSim.clock());
 		flow.setDatacenterId(datacenterId);
-		flow.setOsmesisEdgeletSize(app.getOsmesisEdgeletSize());
+		flow.setOsmesisEdgeletSize(edgeletSize);
 		OsmosisBuilder.flowId++;
 		flowList.add(flow);
-		
 		return flow;
 	}
 	

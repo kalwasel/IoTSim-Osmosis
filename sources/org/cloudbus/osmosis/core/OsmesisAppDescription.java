@@ -13,7 +13,11 @@ package org.cloudbus.osmosis.core;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
 import org.cloudbus.cloudsim.edge.core.edge.EdgeLet;
+import org.cloudbus.osmosis.core.OsmosisLayer;
+;
 
 
 /**
@@ -25,24 +29,30 @@ import org.cloudbus.cloudsim.edge.core.edge.EdgeLet;
 **/
 
 public class OsmesisAppDescription {
-	
-	private String appName;	
+
+	private String appName;
 	private int workflowId;	
 	
 	private double DataRate;
 	private double StopDataGenerationTime;
 
 	private int appID;
-	private long IoTDeviceOutputSize; // in Mb 
+
+
+	List<OsmosisLayer> layers;
+	List<OsmosisLayer> trackLayers;
+
+	private long IoTDeviceOutputSize; // in Mb
 	private long MELOutputSize; // Mb
 	
 	private long OsmesisEdgeletSize; //MI
 	private long OsmesisCloudletSize; // MI
 	
 	private String IoTDeviceName;
+
 	private String MELName; // mel resides in an edge device
 	private String VmName;
-	
+
 	private int iotDeviceID;
 	private int melId;	 
 	private int vmCloudId; 
@@ -50,9 +60,11 @@ public class OsmesisAppDescription {
 	private int edgeDcId;
 	private int cloudDcId;
 	
-	private String edgeDatacenterName; 
-	private String cloudDatacenterName;
-	
+//	private String edgeDatacenterName;
+//	private String cloudDatacenterName;
+//	private List<String> datacentersName;
+	private Map<String, String> datacentersName;
+
 	private double startTime = -1;
 	private double endTime;	 	
 		
@@ -62,24 +74,45 @@ public class OsmesisAppDescription {
 
 	private double IoTDeviceBatteryConsumption;	
 
-	public OsmesisAppDescription(String appName, int appID, double DataRate, double StopDataGenerationTime, 
-			String ioTDeviceName, long ioTDeviceOutput, String MELName, long osmesisEdgeletSize, 
-			long MELOutput, String vmName, long osmesisCloudletSize) {
-		this.appName = appName;
-		this.DataRate = DataRate;
-		this.StopDataGenerationTime = StopDataGenerationTime;
-		this.IoTDeviceName = ioTDeviceName;
+	// renewable energy
+	private String MELName_2;
+	private long OsmesisEdgeletSize_2; //MI
+	private long MELOutputSize_2; // Mb
+
+//	public OsmesisAppDescription(String appName, int appID, double DataRate, double StopDataGenerationTime,
+//								 String ioTDeviceName, long ioTDeviceOutput, String MELName, long osmesisEdgeletSize,
+//								 long MELOutput, String MELName_2, long osmesisEdgeletSize_2,
+//								 long MELOutput_2, String vmName, long osmesisCloudletSize, Map<String, String> melDatacenter_Name) {
+//		this.appName = appName;
+//		this.DataRate = DataRate;
+//		this.StopDataGenerationTime = StopDataGenerationTime;
+//		this.IoTDeviceName = ioTDeviceName;
+//		this.appID = appID;
+//		this.IoTDeviceOutputSize = ioTDeviceOutput;
+//		this.MELName = MELName;
+//		this.OsmesisEdgeletSize = osmesisEdgeletSize;
+//		this.MELOutputSize = MELOutput;
+//
+//		// renewable energy
+//		this.MELName_2 = MELName_2;
+//		this.OsmesisEdgeletSize_2 = osmesisEdgeletSize_2;
+//		this.MELOutputSize_2 = MELOutput_2;
+//
+//		this.VmName = vmName;
+//		this.OsmesisCloudletSize = osmesisCloudletSize;
+//		this.edgeLetList = new ArrayList<>();
+//		this.isIoTDeviceDied = false;
+//		this.datacentersName = melDatacenter_Name;
+//	}
+
+	public OsmesisAppDescription(String osmesisAppName, int appID, double dataRate, double stopDataGenerationTime, List<OsmosisLayer> layers) {
+		this.appName = osmesisAppName;
 		this.appID = appID;
-		this.IoTDeviceOutputSize = ioTDeviceOutput;  
-		this.MELName = MELName;
-		this.OsmesisEdgeletSize = osmesisEdgeletSize; 
-		this.MELOutputSize = MELOutput;
-		this.VmName = vmName;
-		this.OsmesisCloudletSize = osmesisCloudletSize; 
-		this.edgeLetList = new ArrayList<>();
-		this.isIoTDeviceDied = false;
-	}	
-	
+		this.DataRate = dataRate;
+		this.StopDataGenerationTime = stopDataGenerationTime;
+		this.layers = layers;
+	}
+
 	public double getStopDataGenerationTime() {
 		return StopDataGenerationTime;
 	}
@@ -183,21 +216,28 @@ public class OsmesisAppDescription {
 		return this.workflowId;
 	}
 
-	public String getEdgeDatacenterName() {
-		return edgeDatacenterName;
+	public String getDatacenterName(String melName) {
+//		return this.datacentersName.get(melName);
+		return "";
 	}
 
-	public void setEdgeDatacenterName(String edgeDatacenterName) {
-		this.edgeDatacenterName = edgeDatacenterName;
-	}
 
-	public String getCloudDatacenterName() {
-		return cloudDatacenterName;
-	}
+//	public String getDatacenterName(int index) {
+//		return this.datacentersName.get(index);
+//	}
+//
+//	public void setDatacenterName(String edgeDatacenterName) {
+////		this.edgeDatacenterName = edgeDatacenterName;
+//	this.datacentersName.add(edgeDatacenterName);
+//	}
 
-	public void setCloudDatacenterName(String cloudDatacenterName) {
-		this.cloudDatacenterName = cloudDatacenterName;
-	}
+//	public String getCloudDatacenterName() {
+//		return cloudDatacenterName;
+//	}
+//
+//	public void setCloudDatacenterName(String cloudDatacenterName) {
+//		this.cloudDatacenterName = cloudDatacenterName;
+//	}
 
 	public int getEdgeDcId() {
 		return edgeDcId;
@@ -237,4 +277,42 @@ public class OsmesisAppDescription {
 	public double getIoTDeviceBatteryConsumption() {
 		return IoTDeviceBatteryConsumption;
 	}
+
+	public String getMELName_2() {
+		return MELName_2;
+	}
+
+	public long getOsmesisEdgeletSize_2() {
+		return OsmesisEdgeletSize_2;
+	}
+
+	public long getMELOutputSize_2() {
+		return MELOutputSize_2;
+	}
+
+
+	public OsmosisLayer getOsmosisLayer(int index) {
+		return layers.get(index);
+	}
+
+	public int getOsmosisLayerSize() {
+		return this.layers.size();
+	}
+
+//	public OsmosisLayer getLayer() {
+//		int index;
+//		if(trackLayers == null) {
+//			this.trackLayers = new ArrayList<>();
+//			index = this.trackLayers.size();
+//		} else {
+//				index = this.trackLayers.size() + 1;
+//		}
+//		trackLayers.add(layers.get(index));
+//		return layers.get(index);
+//	}
+
+	public OsmosisLayer getIoTLayer() {
+		return layers.get(0);
+	}
+
 }

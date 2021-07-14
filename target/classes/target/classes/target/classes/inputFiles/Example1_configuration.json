@@ -1,0 +1,635 @@
+{   
+   "edgeDatacenter":[
+	{
+		"name":"Edge_1",
+		"type":"edge",
+		"schedulingInterval":1.0,
+		"vmAllocationPolicy":{
+			"className":"VmAllocationPolicyCombinedLeastFullFirst"
+		},	
+		"characteristics":{
+			"costPerMem":0.05,
+			"cost":1.0,
+			"os":"Linux",
+			"costPerSec":0.0,
+			"vmm":"Xen",
+			"timeZone":10.0,
+			"costPerBw":0.0,
+			"costPerStorage":0.001,
+			"architecture":"x86"			
+		},				
+		"hosts":[
+			{		    
+				"name":"edgeDevice_1",				
+			    "pes" : 4,
+				"ramSize":10000,
+				"bwSize":100,				
+				"storage":10000,
+				"mips":10000			
+            },
+			{
+				"name":"edgeDevice_2",				
+				"pes" : 4,
+				"ramSize":10000,
+				"bwSize":100,				
+				"storage":10000,
+				"mips":10000				
+            }
+            ],
+		"MELEntities":[
+		{
+			"name":"MEL_1",								
+			"bw":100,				 
+			"mips":250,			
+			"ram":10000,
+			"pesNumber":1,
+			"vmm":"xxx",			
+			"cloudletSchedulerClassName":"org.cloudbus.cloudsim.CloudletSchedulerTimeShared"
+		},
+		{
+			"name":"MEL_2",					
+			"bw":100,
+			"mips":250,			
+			"ram":10000,
+			"pesNumber":1,
+			"vmm":"xxx",			
+			"cloudletSchedulerClassName":"org.cloudbus.cloudsim.CloudletSchedulerTimeShared"			 
+		}		
+		],
+		"controllers": [
+		{
+			"name": "edge1_sdn1",
+			"trafficPolicy": "FairShare",
+			"routingPolicy": "ShortestPathBw"
+		}
+		],
+		"switches":[
+		{
+			"type" : "gateway",
+			"name": "edge1_gateway",
+			"controller": "edge1_sdn1",
+			"iops":1000000000			
+		},
+		{
+			"type" : "core",
+			"name": "core1",
+			"controller": "edge1_sdn1",
+			"iops":1000000000			
+		},
+		{
+			"type" : "core",
+			"name": "core2",
+			"controller": "edge1_sdn1",
+			"iops":1000000000			
+		},
+		{
+			"type" : "edge",
+			"name": "edge1",
+			"controller": "edge1_sdn1",
+			"iops":1000000000
+		},
+		{
+			"type" : "edge",
+			"name": "edge2",
+			"controller": "edge1_sdn1",
+			"iops":1000000000
+		},
+		{
+			"type" : "edge",
+			"name": "edge3",
+			"controller": "edge1_sdn1",
+			"iops":1000000000
+		},
+		{
+			"type" : "edge",
+			"name": "edge4",
+			"controller": "edge1_sdn1",
+			"iops":1000000000
+		},
+		{
+			"type" : "edge",
+			"name": "edge5",
+			"controller": "edge1_sdn1",
+			"iops":1000000000
+		}
+        ],		
+		"links" : 
+		[
+			{ "source" : "core1" , "destination" : "edge1_gateway", "bw" : 100},
+			{ "source" : "core2" , "destination" : "edge1_gateway", "bw" : 100},			
+			{ "source" : "core1" , "destination" : "edge1" , "bw" : 100},
+			{ "source" : "core1" , "destination" : "edge2" , "bw" : 100},
+			{ "source" : "core2" , "destination" : "edge3" , "bw" : 100},
+			{ "source" : "core2" , "destination" : "edge4" , "bw" : 100},
+			{ "source" : "core2" , "destination" : "edge5" , "bw" : 100},			
+			{ "source" : "edge1" , "destination" : "edgeDevice_1" , "bw" : 100},
+			{ "source" : "edge2" , "destination" : "edgeDevice_2" , "bw" : 100}
+		],
+		"ioTDevices":[
+			  {
+				"name":"temperature_1",
+				"bw":100,				
+				"max_battery_capacity":100.0,
+				"battery_sensing_rate":0.001,
+				"battery_sending_rate":0.001,
+				"ioTClassName":"org.cloudbus.cloudsim.edge.iot.TemperatureSensor",		
+				 "mobilityEntity":{
+					"movable":false,
+					"location":{
+					   "x":0.0,
+					   "y":0.0,
+					   "z":0.0
+					}
+				 },
+				 "networkModelEntity":{
+					"communicationProtocol":"xmpp",
+					"networkType":"wifi"
+				 }
+			  },
+			  {
+				"name":"temperature_2",
+				"bw":100,				
+				"max_battery_capacity":100.0,
+				"battery_sensing_rate":0.001,
+				"battery_sending_rate":0.001,
+				"ioTClassName":"org.cloudbus.cloudsim.edge.iot.TemperatureSensor",		
+				 "mobilityEntity":{
+					"movable":false,
+					"location":{
+					   "x":0.0,
+					   "y":0.0,
+					   "z":0.0
+					}
+				 },
+				 "networkModelEntity":{
+					"communicationProtocol":"xmpp",
+					"networkType":"wifi"
+				 }
+			  },
+			  {
+				"name":"temperature_3",
+				"bw":100,				
+				"max_battery_capacity":100.0,
+				"battery_sensing_rate":0.001,
+				"battery_sending_rate":0.001,
+				"ioTClassName":"org.cloudbus.cloudsim.edge.iot.TemperatureSensor",		
+				 "mobilityEntity":{
+					"movable":false,
+					"location":{
+					   "x":0.0,
+					   "y":0.0,
+					   "z":0.0
+					}
+				 },
+				 "networkModelEntity":{
+					"communicationProtocol":"xmpp",
+					"networkType":"wifi"
+				 }
+			  },
+			  {
+				"name":"temperature_4",
+				"bw":100,				
+				"max_battery_capacity":100.0,
+				"battery_sensing_rate":0.001,
+				"battery_sending_rate":0.001,
+				"ioTClassName":"org.cloudbus.cloudsim.edge.iot.TemperatureSensor",		
+				 "mobilityEntity":{
+					"movable":false,
+					"location":{
+					   "x":0.0,
+					   "y":0.0,
+					   "z":0.0
+					}
+				 },
+				 "networkModelEntity":{
+					"communicationProtocol":"xmpp",
+					"networkType":"wifi"
+				 }
+			  },
+			  {
+				"name":"temperature_5",
+				"bw":100,				
+				"max_battery_capacity":100.0,
+				"battery_sensing_rate":0.001,
+				"battery_sending_rate":0.001,
+				"ioTClassName":"org.cloudbus.cloudsim.edge.iot.TemperatureSensor",		
+				 "mobilityEntity":{
+					"movable":false,
+					"location":{
+					   "x":0.0,
+					   "y":0.0,
+					   "z":0.0
+					}
+				 },
+				 "networkModelEntity":{
+					"communicationProtocol":"xmpp",
+					"networkType":"wifi"
+				 }
+			  },
+			  {
+				"name":"temperature_6",
+				"bw":100,				
+				"max_battery_capacity":100.0,
+				"battery_sensing_rate":0.001,
+				"battery_sending_rate":0.001,
+				"ioTClassName":"org.cloudbus.cloudsim.edge.iot.TemperatureSensor",		
+				 "mobilityEntity":{
+					"movable":false,
+					"location":{
+					   "x":0.0,
+					   "y":0.0,
+					   "z":0.0
+					}
+				 },
+				 "networkModelEntity":{
+					"communicationProtocol":"xmpp",
+					"networkType":"wifi"
+				 }
+			  },
+			  {
+				"name":"temperature_7",
+				"bw":100,				
+				"max_battery_capacity":100.0,
+				"battery_sensing_rate":0.001,
+				"battery_sending_rate":0.001,
+				"ioTClassName":"org.cloudbus.cloudsim.edge.iot.TemperatureSensor",		
+				 "mobilityEntity":{
+					"movable":false,
+					"location":{
+					   "x":0.0,
+					   "y":0.0,
+					   "z":0.0
+					}
+				 },
+				 "networkModelEntity":{
+					"communicationProtocol":"xmpp",
+					"networkType":"wifi"
+				 }
+			  },
+			  {
+				"name":"temperature_8",
+				"bw":100,				
+				"max_battery_capacity":100.0,
+				"battery_sensing_rate":0.001,
+				"battery_sending_rate":0.001,
+				"ioTClassName":"org.cloudbus.cloudsim.edge.iot.TemperatureSensor",		
+				 "mobilityEntity":{
+					"movable":false,
+					"location":{
+					   "x":0.0,
+					   "y":0.0,
+					   "z":0.0
+					}
+				 },
+				 "networkModelEntity":{
+					"communicationProtocol":"xmpp",
+					"networkType":"wifi"
+				 }
+			  },
+			  {
+				"name":"temperature_9",
+				"bw":100,				
+				"max_battery_capacity":100.0,
+				"battery_sensing_rate":0.001,
+				"battery_sending_rate":0.001,
+				"ioTClassName":"org.cloudbus.cloudsim.edge.iot.TemperatureSensor",		
+				 "mobilityEntity":{
+					"movable":false,
+					"location":{
+					   "x":0.0,
+					   "y":0.0,
+					   "z":0.0
+					}
+				 },
+				 "networkModelEntity":{
+					"communicationProtocol":"xmpp",
+					"networkType":"wifi"
+				 }
+			  },
+			  {
+				"name":"temperature_10",								 			
+				"bw":100,				
+				"max_battery_capacity":100.0,
+				"battery_sensing_rate":0.001,
+				"battery_sending_rate":0.001,
+				"ioTClassName":"org.cloudbus.cloudsim.edge.iot.TemperatureSensor",		
+				 "mobilityEntity":{
+					"movable":false,
+					"location":{
+					   "x":0.0,
+					   "y":0.0,
+					   "z":0.0
+					}
+				 },
+				 "networkModelEntity":{
+					"communicationProtocol":"xmpp",
+					"networkType":"wifi"
+				 }
+			  }
+		]					
+    }
+   ],  
+	  "logEntity":{
+	  "logLevel":"debug",
+	  "saveLogToFile":true,
+	  "logFilePath":"log.txt",
+	  "append":false
+   },
+   "trace_flag":false,
+   "cloudDatacenter": [
+    {
+		"name": "Cloud_1",
+		"type":"cloud",
+		"vmAllocationPolicy": "VmAllocationPolicyCombinedLeastFullFirst",
+		"hosts": 
+		[
+			{
+			  "name": "host1",
+			  "pes" : 4,
+			  "mips" : 1250,
+			  "ram" : 32750,
+			  "bw" : 10000,
+			  "storage" : 6400000000000
+			},
+			{
+			  "name": "host2",
+			  "pes" : 4,
+			  "mips" : 1250,
+			  "ram" : 32750,
+			  "bw" : 10000,
+			  "storage" : 6400000000000
+			}
+		],
+		"VMs": 
+		[
+			{				
+				"name": "VM_1",				
+				"pes" : 2,
+				"mips" : 250,
+				"ram" : 512,
+				"storage" : 10000,
+				"bw" : 1000,
+				"cloudletPolicy": "TimeShared" 
+			},
+			{				
+				"name": "VM_2",				
+				"pes" : 2,
+				"mips" : 250,
+				"ram" : 512,
+				"storage" : 10000,
+				"bw" : 1000,
+				"cloudletPolicy": "TimeShared" 
+			}
+		],
+		"controllers": 
+		[
+			{
+			  "name": "dc1_sdn1",
+			  "trafficPolicy": "FairShare",
+			  "routingPolicy": "ShortestPathBw"
+			}
+		],
+        "switches":
+		[
+			{
+				"type" : "gateway",
+				"name": "dc1_gateway",
+				"controller": "dc1_sdn1",
+				"iops":1000000000
+			},
+			{
+				"type" : "core",
+				"name": "core1",
+				"controller": "dc1_sdn1",
+				"iops":1000000000
+			},			{
+				"type" : "core",
+				"name": "core2",
+				"controller": "dc1_sdn1",
+				"iops":1000000000
+			},			{
+				"type" : "core",
+				"name": "core3",
+				"controller": "dc1_sdn1",
+				"iops":1000000000
+			},			{
+				"type" : "core",
+				"name": "core4",
+				"controller": "dc1_sdn1",
+				"iops":1000000000
+			},			
+			{
+				"type" : "aggregate",
+				"name": "aggregate1",
+				"controller": "dc1_sdn1",
+				"iops":1000000000
+			},			
+			{
+				"type" : "aggregate",
+				"name": "aggregate2",
+				"controller": "dc1_sdn1",
+				"iops":1000000000
+			},			
+			{
+				"type" : "aggregate",
+				"name": "aggregate3",
+				"controller": "dc1_sdn1",
+				"iops":1000000000
+			},			
+			{
+				"type" : "aggregate",
+				"name": "aggregate4",
+				"controller": "dc1_sdn1",
+				"iops":1000000000
+			},
+			{
+				"type" : "aggregate",
+				"name": "aggregate5",
+				"controller": "dc1_sdn1",
+				"iops":1000000000
+			},
+			{
+				"type" : "aggregate",
+				"name": "aggregate6",
+				"controller": "dc1_sdn1",
+				"iops":1000000000
+			},
+			{
+				"type" : "aggregate",
+				"name": "aggregate7",
+				"controller": "dc1_sdn1",
+				"iops":1000000000
+			},
+			{
+				"type" : "aggregate",
+				"name": "aggregate8",
+				"controller": "dc1_sdn1",
+				"iops":1000000000
+			},
+			{
+				"type" : "edge",
+				"name": "edge1",
+				"controller": "dc1_sdn1",
+				"iops":1000000000
+			},
+			{
+				"type" : "edge",
+				"name": "edge2",
+				"controller": "dc1_sdn1",
+				"iops":1000000000
+			},
+			{
+				"type" : "edge",
+				"name": "edge3",
+				"controller": "dc1_sdn1",
+				"iops":1000000000
+			},
+			{
+				"type" : "edge",
+				"name": "edge4",
+				"controller": "dc1_sdn1",
+				"iops":1000000000
+			},
+			{
+				"type" : "edge",
+				"name": "edge5",
+				"controller": "dc1_sdn1",
+				"iops":1000000000
+			},
+			{
+				"type" : "edge",
+				"name": "edge6",
+				"controller": "dc1_sdn1",
+				"iops":1000000000
+			},
+			{
+				"type" : "edge",
+				"name": "edge7",
+				"controller": "dc1_sdn1",
+				"iops":1000000000
+			},
+			{
+				"type" : "edge",
+				"name": "edge8",
+				"controller": "dc1_sdn1",
+				"iops":1000000000
+			}
+		],
+		"links" : 
+		[
+			{ "source" : "core1" , "destination" : "dc1_gateway", "bw" : 1000},
+			{ "source" : "core2" , "destination" : "dc1_gateway", "bw" : 1000},
+			{ "source" : "core3" , "destination" : "dc1_gateway", "bw" : 1000},
+			{ "source" : "core4" , "destination" : "dc1_gateway", "bw" : 1000},
+			{ "source" : "core1" , "destination" : "aggregate1" , "bw" : 1000},
+			{ "source" : "core1" , "destination" : "aggregate3" , "bw" : 1000},
+			{ "source" : "core1" , "destination" : "aggregate5" , "bw" : 1000},
+			{ "source" : "core1" , "destination" : "aggregate7" , "bw" : 1000},
+
+			{ "source" : "core2" , "destination" : "aggregate1" , "bw" : 1000},
+			{ "source" : "core2" , "destination" : "aggregate3" , "bw" : 1000},
+			{ "source" : "core2" , "destination" : "aggregate5" , "bw" : 1000},
+			{ "source" : "core2" , "destination" : "aggregate7" , "bw" : 1000},
+
+			{ "source" : "core3" , "destination" : "aggregate2" , "bw" : 1000},
+			{ "source" : "core3" , "destination" : "aggregate4" , "bw" : 1000},
+			{ "source" : "core3" , "destination" : "aggregate6" , "bw" : 1000},
+			{ "source" : "core3" , "destination" : "aggregate8" , "bw" : 1000},
+			
+			{ "source" : "core4" , "destination" : "aggregate2" , "bw" : 1000},
+			{ "source" : "core4" , "destination" : "aggregate4" , "bw" : 1000},
+			{ "source" : "core4" , "destination" : "aggregate6" , "bw" : 1000},
+			{ "source" : "core4" , "destination" : "aggregate8" , "bw" : 1000},
+			
+			{ "source" : "aggregate1" , "destination" : "edge1" , "bw" : 1000},
+			{ "source" : "aggregate1" , "destination" : "edge2" , "bw" : 1000},
+
+			{ "source" : "aggregate2" , "destination" : "edge1" , "bw" : 1000},
+			{ "source" : "aggregate2" , "destination" : "edge2" , "bw" : 1000},
+
+			{ "source" : "aggregate3" , "destination" : "edge3" , "bw" : 1000},
+			{ "source" : "aggregate3" , "destination" : "edge4" , "bw" : 1000},
+
+			{ "source" : "aggregate4" , "destination" : "edge3" , "bw" : 1000},    
+			{ "source" : "aggregate4" , "destination" : "edge4" , "bw" : 1000},
+
+			{ "source" : "aggregate5" , "destination" : "edge5" , "bw" : 1000},
+			{ "source" : "aggregate5" , "destination" : "edge6" , "bw" : 1000},
+
+			{ "source" : "aggregate6" , "destination" : "edge5" , "bw" : 1000},
+			{ "source" : "aggregate6" , "destination" : "edge6" , "bw" : 1000},
+
+			{ "source" : "aggregate7" , "destination" : "edge7" , "bw" : 1000},
+			{ "source" : "aggregate7" , "destination" : "edge8" , "bw" : 1000},
+
+			{ "source" : "aggregate8" , "destination" : "edge7" , "bw" : 1000},    
+			{ "source" : "aggregate8" , "destination" : "edge8" , "bw" : 1000},
+			
+
+			{ "source" : "edge1" , "destination" : "host1" , "bw" : 1000},
+			{ "source" : "edge1" , "destination" : "host2" , "bw" : 1000}		
+		]
+	 }
+	],
+  "sdwan": [
+	  {
+		"controllers": {
+		  "name": "wan_sdn",
+		  "trafficPolicy": "FairShare",
+		  "routingPolicy": "ShortestPathBw"
+		},	
+		"switches":[
+		{
+			"type" : "gateway",
+			"name": "sdwan_router_1",
+			"controller": "dc2_sdn1",
+			"iops":1000000000
+		},
+		{
+			"type" : "gateway",
+			"name": "sdwan_router_2",
+			"controller": "dc3_sdn1",
+			"iops":1000000000 
+		},
+		{
+			"type" : "gateway",
+			"name": "sdwan_router_3",
+			"controller": "dc3_sdn1",
+			"iops":1000000000 
+		},
+		{
+			"type" : "gateway",
+			"name": "sdwan_router_4",
+			"controller": "dc3_sdn1",
+			"iops":1000000000 
+		},
+		{
+			"type" : "gateway",
+			"name": "sdwan_router_5",
+			"controller": "dc3_sdn1",
+			"iops":1000000000 
+		},
+		{
+			"type" : "gateway",
+			"name": "sdwan_router_6",
+			"controller": "dc3_sdn1",
+			"iops":1000000000 
+		}
+		],
+		"links": [
+			{ "source" : "edge1_gateway" , "destination" : "sdwan_router_1" , "bw" : 1000},
+			{ "source" : "sdwan_router_1" , "destination" : "sdwan_router_2" , "bw" : 1000},
+			{ "source" : "sdwan_router_1" , "destination" : "sdwan_router_3" , "bw" : 1000},
+			{ "source" : "sdwan_router_2" , "destination" : "sdwan_router_4" , "bw" : 1000},
+			{ "source" : "sdwan_router_2" , "destination" : "sdwan_router_5" , "bw" : 1000},
+			{ "source" : "sdwan_router_3" , "destination" : "sdwan_router_4" , "bw" : 1000},
+			{ "source" : "sdwan_router_3" , "destination" : "sdwan_router_5" , "bw" : 1000},
+			
+			{ "source" : "sdwan_router_4" , "destination" : "sdwan_router_6" , "bw" : 1000},
+			{ "source" : "sdwan_router_5" , "destination" : "sdwan_router_6" , "bw" : 1000},
+			
+			{ "source" : "dc1_gateway" , "destination" : "sdwan_router_6" , "bw" : 1000}			
+		]
+	  }
+  ]
+}
